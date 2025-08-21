@@ -854,7 +854,16 @@ class BatchedCallable(eqx.Module):
             return self.f(t)[tuple(self.indices)]
 
     @property
-    def dtype(self) -> tuple[int, ...]:
+    def dtype(self) -> jnp.dtype:
+        """Data type of the callable output.
+
+        Returns:
+            The :class:`jax.numpy.dtype` of the object returned by the
+            underlying callable. This was previously annotated as returning a
+            ``tuple[int, ...]`` which was incorrect and could confuse type
+            checkers.
+        """
+
         return jax.eval_shape(self.f, 0.0).dtype
 
     @property

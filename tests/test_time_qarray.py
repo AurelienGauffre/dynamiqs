@@ -12,6 +12,7 @@ from dynamiqs.time_qarray import (
     modulated,
     pwc,
     timecallable,
+    BatchedCallable,
 )
 
 from .order import TEST_SHORT
@@ -335,3 +336,14 @@ class TestModulatedTimeQArray:
         x = y + self.x
         assert isinstance(x, SummedTimeQArray)
         assert_equal(x(0.0), [[1.0 + 1.0j, 1.0 + 2.0j], [1.0 + 3.0j, 1.0 + 4.0j]])
+
+
+def test_batched_callable_dtype():
+    """Ensure that :class:`BatchedCallable` reports the correct dtype."""
+
+    f = BatchedCallable(lambda t: jnp.array([t], dtype=jnp.float32))
+
+    # The dtype property should return a ``jax.numpy.dtype`` object rather than a
+    # tuple of ints.  This test guards against regressions of the previous bug
+    # where the annotation incorrectly suggested a tuple was returned.
+    assert f.dtype == jnp.float32
